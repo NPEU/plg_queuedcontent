@@ -1,2 +1,2 @@
-# plg_queued_content
+# plg_queuedcontent
 Queues content for future publishing.

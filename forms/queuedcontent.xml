@@ -9,6 +9,7 @@
             description="PLG_SYSTEM_QUEUED_CONTENT_DATE_DESC"
             showtime="true"
             format="%Y-%m-%d %H:%M:%S"
+            filter="none"
         />
         <field
             name="queued_content"

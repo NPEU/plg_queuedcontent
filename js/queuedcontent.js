@@ -75,25 +75,35 @@ var QueuedContent = {
     },
 
     'addFutureDateListener': function () {
+        $ = jQuery;
+        
         $('#jform_queuedcontent_publish_date').change(function(e){
             QueuedContent.removeQueueNotice();
             if (QueuedContent.hasQueuedContent()) {
                 QueuedContent.addQueueNotice();
             }
         });
-
+        
+        // Wait so that the Calendar 'Clear' button is likely loaded, then add click event to remove
+        // notices:
+        window.setTimeout(function(){
+            $('[data-action="clear"]').click(function(e){
+                QueuedContent.removeQueueNotice();
+            });
+        }, 500);
+        
     },
 
     'addQueueNotice': function () {
         $ = jQuery;
 
         title = QueuedContent.future_date_in_future
-              ? 'Future content is queued.'
-              : 'Future content is queued with a date that is <strong>in the past</strong>.';
+              ? 'Future-publishing content is queued.'
+              : 'Future-publishing content is queued with a date that is <strong>in the past</strong>.';
 
         message = QueuedContent.future_date_in_future
-                ? 'Any changes made to the content here will be replaced by the future content at the future publish date/time.</p>'
-                : 'Any changes made to the content here will be replaced by the future content <strong>the next time the page is loaded</strong>.</p>';
+                ? 'Any changes made to the Content will be replaced by the Queued Content at the future publish date/time.</p>'
+                : 'Any changes made to the Content will be replaced by the Queued Content <strong>the next time the page is loaded</strong>.</p>';
 
         notice = [
             '<div class="row-fluid future-publish-queue-notice">',

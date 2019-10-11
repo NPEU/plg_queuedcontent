@@ -262,9 +262,11 @@ class plgSystemQueuedContent extends JPlugin
         // Delete any existing records (we can only make use of one anyway):
         $this->clearQueue($data['id']);
 
+        $date = new JDate($data['queuedcontent']['publish_date']);
+        
         $queue = new stdClass;
         $queue->content_id     = (int) $data['id'];
-        $queue->publish_date   = $data['queuedcontent']['publish_date'];
+        $queue->publish_date   = $date->toSql();
         $queue->queued_content = $data['queuedcontent']['queued_content'];
 
         $db->insertObject('#__content_queue', $queue);

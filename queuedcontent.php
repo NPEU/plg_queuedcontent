@@ -75,14 +75,14 @@ class plgSystemQueuedContent extends JPlugin
         $db  = JFactory::getDbo();
 
         $query = $db->getQuery(true);
-        
+
         $updateObj = new stdClass;
         $updateObj->id        = (int) $item->id;
         $updateObj->introtext = $item->introtext;
         $updateObj->fulltext  = $item->fulltext;
         $updateObj->modified  = $item->queuedcontent['publish_date'];
         $updateObj->version   = $item->version++;
-        
+
         $db->updateObject('#__content', $updateObj, 'id');
 
         $this->clearQueue($item->id);
@@ -163,7 +163,7 @@ class plgSystemQueuedContent extends JPlugin
             );
         }
 
-        if (empty($item->queuedcontent['publish_date']) || strtotime(new JDate('now')) < strtotime($item->queuedcontent['publish_date'])) {
+        if (empty($item->queuedcontent['publish_date']) || strtotime(new JDate('now', 'Europe/London')) < strtotime(new JDate($item->queuedcontent['publish_date']))) {
             // Future date not yet arrived. Do nothing.
             return false;
         }
@@ -263,7 +263,7 @@ class plgSystemQueuedContent extends JPlugin
         $this->clearQueue($data['id']);
 
         $date = new JDate($data['queuedcontent']['publish_date']);
-        
+
         $queue = new stdClass;
         $queue->content_id     = (int) $data['id'];
         $queue->publish_date   = $date->toSql();
@@ -294,7 +294,7 @@ class plgSystemQueuedContent extends JPlugin
         /*if (!$this->item) {
             return;
         }*/
-        
+
         return;
 
         // Can't load Admin version of ContentModelArticle because Site version is needed to load

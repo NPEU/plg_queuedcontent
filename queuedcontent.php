@@ -271,7 +271,7 @@ class plgSystemQueuedContent extends JPlugin
 
         $db->insertObject('#__content_queue', $queue);
 
-        JFactory::getApplication()->enqueueMessage(JText::_( 'PLG_SYSTEM_QUEUED_CONTENT_SAVE_SUCCESS'), 'message');
+        JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_QUEUED_CONTENT_SAVE_SUCCESS'), 'message');
     }
 
 

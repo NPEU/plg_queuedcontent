@@ -155,7 +155,7 @@ class plgSystemQueuedContent extends JPlugin
             return;
         }
 
-        // Get queued item if availale:
+        // Get queued item if available:
         if ($queue = $this->getQueue($item->id)) {
             $item->queuedcontent = array(
                 'publish_date'   => $queue->publish_date,
@@ -184,9 +184,8 @@ class plgSystemQueuedContent extends JPlugin
      */
     public function onContentPrepareData($context, $data)
     {
-        #echo '<pre>'; var_dump($data); echo '</pre>'; exit;
         // Check we're running in the right context:
-        if (strpos($context, 'com_content' !== 0)) {
+        if (strpos($context, 'com_content') !== 0) {
             return;
         }
 
@@ -196,7 +195,7 @@ class plgSystemQueuedContent extends JPlugin
             return;
         }
 
-        // Get queued item if availale:
+        // Get queued item if available:
         if ($queue = $this->getQueue($data->id)) {
             $data->queuedcontent = array(
                 'publish_date'   => $queue->publish_date,

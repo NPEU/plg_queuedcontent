@@ -164,7 +164,7 @@ class plgSystemQueuedContent extends JPlugin
         }
 
         if (empty($item->queuedcontent['publish_date']) || strtotime(new JDate('now', 'Europe/London')) < strtotime(new JDate($item->queuedcontent['publish_date']))) {
-            // Future date not yet arrived. Do nothing.
+            // No date or future date not yet arrived. Do nothing.
             return false;
         }
 
@@ -261,12 +261,26 @@ class plgSystemQueuedContent extends JPlugin
         // Delete any existing records (we can only make use of one anyway):
         $this->clearQueue($data['id']);
 
-        $date = new JDate($data['queuedcontent']['publish_date']);
+        if (!empty($data['queuedcontent']['publish_date'])) {
+            $date = new JDate($data['queuedcontent']['publish_date']);
+            $date = $date->toSql();
+        } else {
+            $date = '';
+        }
+        
+        $content = trim($data['queuedcontent']['queued_content']);
+        //echo '<pre>'; var_dump($data['queuedcontent']['queued_content']); echo '</pre>'; exit;
+        
+        if (empty($content)) {
+            return;
+        }
+        
+        //return;
 
         $queue = new stdClass;
         $queue->content_id     = (int) $data['id'];
-        $queue->publish_date   = $date->toSql();
-        $queue->queued_content = $data['queuedcontent']['queued_content'];
+        $queue->publish_date   = $date;
+        $queue->queued_content = $content;
 
         $db->insertObject('#__content_queue', $queue);
 

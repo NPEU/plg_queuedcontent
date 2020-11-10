@@ -17,4 +17,21 @@
             <tag>stable</tag>
         </tags>
     </update>
+    <update>
+        <name>NPEU: plg_queuedcontent</name>
+        <description>Joomla! plg_queuedcontent plugin</description>
+        <element>queuedcontent</element>
+        <type>plugin</type>
+        <folder>system</folder>
+        <version>1.0.1</version>
+        <client>site</client>
+        <infourl title="NPEU: plg_queuedcontent">https://github.com/NPEU/plg_queuedcontent/releases/tag/v1.0.1</infourl>
+        <downloads>
+            <downloadurl type="full" format="zip">https://github.com/NPEU/plg_queuedcontent/archive/v1.0.1.zip</downloadurl>
+        </downloads>
+        <targetplatform name="joomla" />
+        <tags>
+            <tag>stable</tag>
+        </tags>
+    </update>
 </updates>

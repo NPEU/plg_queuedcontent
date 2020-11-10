@@ -145,7 +145,7 @@ class plgSystemQueuedContent extends JPlugin
     public function onContentPrepare($context, &$item, &$params, $page = 0)
     {
         // Check we're running in the right context:
-        if (strpos($context, 'com_content') !== 0)) {
+        if (strpos($context, 'com_content') !== 0) {
             return;
         }
 

@@ -129,6 +129,8 @@ class plgSystemQueuedContent extends JPlugin
                 'publish_date'   => $queue->publish_date,
                 'queued_content' => $queue->queued_content
             );
+        } else {
+            return true;
         }
 
         if ($item->queuedcontent['publish_date'] == '0000-00-00 00:00:00' || strtotime(new JDate('now', 'Europe/London')) < strtotime(new JDate($item->queuedcontent['publish_date']))) {
@@ -173,7 +175,7 @@ class plgSystemQueuedContent extends JPlugin
 
         $document = JFactory::getDocument();
         $document->addScript('/plugins/system/queuedcontent/js/queuedcontent.js');
-        
+
         return true;
     }
 
@@ -236,9 +238,9 @@ class plgSystemQueuedContent extends JPlugin
         } else {
             $date = '';
         }
-        
+
         $content = trim($data['queuedcontent']['queued_content']);
-        
+
         if (empty($content)) {
             return true;
         }
@@ -251,7 +253,7 @@ class plgSystemQueuedContent extends JPlugin
         $db->insertObject('#__content_queue', $queue);
 
         JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_QUEUED_CONTENT_SAVE_SUCCESS'), 'message');
-        
+
         return true;
     }
 

@@ -15,38 +15,13 @@ defined('_JEXEC') or die;
 class plgSystemQueuedContent extends JPlugin
 {
     protected $autoloadLanguage = true;
-    #protected $fields_map_file;
-    #protected $fields_id_name_map;
-    #protected $future_fields = array();
-    #protected $item = false;
-
-    /**
-     * Checks for queued / future content.
-     *
-     * @param   string   $context  The context of the content being passed to the plugin
-     * @param   object   &$item    The article object
-     * @param   object   &$params  The article params
-     * @param   integer  $page     The 'page' number
-     *
-     * @return  string|boolean  HTML string containing code for the votes if in com_content else boolean false
-     */
-    /*protected function checkFutureContent($context, &$item, &$params, $page = 0)
-    {
-        // Compare current time with future publish time:
-        if (empty($params['future-publish-date']) || strtotime(new JDate('now')) < strtotime($params['future-publish-date'])) {
-            // Future date not yet arrived. Do nothing.
-            return false;
-        }
-
-        return true;
-    }*/
 
     /**
      * Updates an article and saves it back to the database.
      *
-     * @param   object   &$item    The article object
+     * @param  object   &$item    The article object
      *
-     * @return  string|boolean  HTML string containing code for the votes if in com_content else boolean false
+     * @return void
      */
     protected function updateArticle(&$item)
     {
@@ -62,9 +37,6 @@ class plgSystemQueuedContent extends JPlugin
         $item->text      = implode(' ', $text);
 
         $this->item      = $item;
-        //return;
-
-
 
         // Can't load Admin version of ContentModelArticle because Site version is needed to load
         // content properly, but this means there's no 'save' method available for updating the
@@ -86,12 +58,10 @@ class plgSystemQueuedContent extends JPlugin
         $db->updateObject('#__content', $updateObj, 'id');
 
         $this->clearQueue($item->id);
-
-        return;
     }
 
     /**
-     * Retrieves queue entry for an ite,
+     * Retrieves queue entry for an item,
      *
      * @param   integer  $item_id  The id of the item we're getting
      *
@@ -116,7 +86,7 @@ class plgSystemQueuedContent extends JPlugin
      *
      * @param   integer  $item_id  The id of the item we're clearing
      *
-     * @return  boolean
+     * @return  void
      */
     protected function clearQueue($item_id)
     {
@@ -127,8 +97,6 @@ class plgSystemQueuedContent extends JPlugin
         $query->delete($query->qn('#__content_queue'))
               ->where($query->qn('content_id') . ' = ' . $query->q($item_id));
         $db->setQuery($query)->execute();
-
-        return true;
     }
 
     /**
@@ -140,19 +108,19 @@ class plgSystemQueuedContent extends JPlugin
      * @param   object   &$params  The article params
      * @param   integer  $page     The 'page' number
      *
-     * @return  string|boolean  HTML string containing code for the votes if in com_content else boolean false
+     * @return  void|false
      */
     public function onContentPrepare($context, &$item, &$params, $page = 0)
     {
         // Check we're running in the right context:
         if (strpos($context, 'com_content') !== 0) {
-            return;
+            return true;
         }
 
         // And that the item we're dealing with is an article:
         // (this may not be the most robust check, but currently nothing else has 'introtext')
         if (!isset($item->introtext)) {
-            return;
+            return true;
         }
 
         // Get queued item if available:
@@ -163,14 +131,14 @@ class plgSystemQueuedContent extends JPlugin
             );
         }
 
-        if (empty($item->queuedcontent['publish_date']) || strtotime(new JDate('now', 'Europe/London')) < strtotime(new JDate($item->queuedcontent['publish_date']))) {
+        if ($item->queuedcontent['publish_date'] == '0000-00-00 00:00:00' || strtotime(new JDate('now', 'Europe/London')) < strtotime(new JDate($item->queuedcontent['publish_date']))) {
             // No date or future date not yet arrived. Do nothing.
-            return false;
+            return true;
         }
 
         $this->updateArticle($item);
 
-        return;
+        return true;
     }
 
 
@@ -180,19 +148,19 @@ class plgSystemQueuedContent extends JPlugin
      * @param   string   $context  The context of the content being passed to the plugin
      * @param   object   $data     The data object
      *
-     * @return  string|boolean  HTML string containing code for the votes if in com_content else boolean false
+     * @return  boolean
      */
     public function onContentPrepareData($context, $data)
     {
         // Check we're running in the right context:
         if (strpos($context, 'com_content') !== 0) {
-            return;
+            return false;
         }
 
         // And that the item we're dealing with is an article:
         // (this may not be the most robust check, but currently nothing else has 'introtext')
         if (!isset($data->introtext)) {
-            return;
+            return true;
         }
 
         // Get queued item if available:
@@ -205,6 +173,8 @@ class plgSystemQueuedContent extends JPlugin
 
         $document = JFactory::getDocument();
         $document->addScript('/plugins/system/queuedcontent/js/queuedcontent.js');
+        
+        return true;
     }
 
     /**
@@ -219,11 +189,11 @@ class plgSystemQueuedContent extends JPlugin
     {
         if (!($form instanceof JForm)) {
             $this->_subject->setError('JERROR_NOT_A_FORM');
-            return false;
+            return true;
         }
 
         if ($form->getName() != 'com_content.article') {
-            return; // We only want to manipulate the article form.
+            return true; // We only want to manipulate the article form.
         }
 
         // Add the extra fields to the form
@@ -240,6 +210,8 @@ class plgSystemQueuedContent extends JPlugin
      * @param   boolean  $isNew    Is new item
      * @param   array    $data     The validated data
      *
+     * @return  boolean
+     *
      */
     public function onContentAfterSave($context, $item, $isNew, $data = array())
     {
@@ -248,15 +220,12 @@ class plgSystemQueuedContent extends JPlugin
         $db  = JFactory::getDbo();
 
         if (!$app->isAdmin()) {
-            return; // Only run in admin
+            return true; // Only run in admin
         }
 
         if ($context != 'com_content.article') {
-            return; // Only run for articles
+            return true; // Only run for articles
         }
-
-        #echo '<pre>'; var_dump($item); echo '</pre>'; #exit;
-        #echo '<pre>'; var_dump($data); echo '</pre>'; exit;
 
         // Delete any existing records (we can only make use of one anyway):
         $this->clearQueue($data['id']);
@@ -269,13 +238,10 @@ class plgSystemQueuedContent extends JPlugin
         }
         
         $content = trim($data['queuedcontent']['queued_content']);
-        //echo '<pre>'; var_dump($data['queuedcontent']['queued_content']); echo '</pre>'; exit;
         
         if (empty($content)) {
-            return;
+            return true;
         }
-        
-        //return;
 
         $queue = new stdClass;
         $queue->content_id     = (int) $data['id'];
@@ -285,15 +251,18 @@ class plgSystemQueuedContent extends JPlugin
         $db->insertObject('#__content_queue', $queue);
 
         JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_QUEUED_CONTENT_SAVE_SUCCESS'), 'message');
+        
+        return true;
     }
 
 
     /**
-     * Hack for adding future-publish event listener to Joomla calendar custom field.
+	 * Hack for adding future-publish event listener to Joomla calendar custom field.
      * Note I haven't found a way to do this in JS and the 'correct' way to specify event handlers
      * is actually in the markup anyway, so more of a fudge and a hack.
-     *
-     */
+	 *
+	 * @return void
+	 */
     public function onAfterRender()
     {
         $response     = JResponse::getBody();
@@ -301,43 +270,5 @@ class plgSystemQueuedContent extends JPlugin
         $replace      = 'onchange="QueuedContent.joomlaFieldCalendarUpdateAction()" id="jform_queuedcontent_publish_date"';
         $response     = str_replace($search, $replace, $response);
         JResponse::setBody($response);
-
-        //return;
-
-        /*if (!$this->item) {
-            return;
-        }*/
-
-        return;
-
-        // Can't load Admin version of ContentModelArticle because Site version is needed to load
-        // content properly, but this means there's no 'save' method available for updating the
-        // article. I can't find a way round this, so we're actually re-loading it from the database
-        // first so we can use all the JTable functionality, including automatic versions.
-
-        $article = JTable::getInstance('Content');
-        $article->load($this->item->id);
-
-        $article->introtext = $this->item->introtext;
-        $article->fulltext  = $this->item->fulltext;
-
-        if (!$article->check()) {
-            JError::raiseNotice(500, $article->getError());
-            return false;
-        }
-
-        if (!$article->store()) {
-            JError::raiseNotice(500, $article->getError());
-            return false;
-        }
-
-        // Queued content now published, so delete the data:
-        $db = JFactory::getDbo();
-
-        // And clear the table values:
-        $sql = "DELETE FROM `#__content_queue` WHERE `content_id` = " . $this->item->id;
-        $db->setQuery($sql);
-        $db->query();
-
     }
 }

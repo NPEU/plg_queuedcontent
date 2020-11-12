@@ -156,7 +156,7 @@ class plgSystemQueuedContent extends JPlugin
     {
         // Check we're running in the right context:
         if (strpos($context, 'com_content') !== 0) {
-            return false;
+            return true;
         }
 
         // And that the item we're dealing with is an article:
@@ -259,12 +259,12 @@ class plgSystemQueuedContent extends JPlugin
 
 
     /**
-	 * Hack for adding future-publish event listener to Joomla calendar custom field.
+     * Hack for adding future-publish event listener to Joomla calendar custom field.
      * Note I haven't found a way to do this in JS and the 'correct' way to specify event handlers
      * is actually in the markup anyway, so more of a fudge and a hack.
-	 *
-	 * @return void
-	 */
+     *
+     * @return void
+     */
     public function onAfterRender()
     {
         $response     = JResponse::getBody();

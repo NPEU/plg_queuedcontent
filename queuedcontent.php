@@ -239,7 +239,11 @@ class plgSystemQueuedContent extends JPlugin
             $date = '';
         }
 
-        $content = trim($data['queuedcontent']['queued_content']);
+        $content = false;
+        
+        if (!empty($data['queuedcontent']['queued_content'])) {
+            $content = trim($data['queuedcontent']['queued_content']);
+        }
 
         if (empty($content)) {
             return true;

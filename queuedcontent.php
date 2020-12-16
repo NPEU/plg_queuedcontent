@@ -35,27 +35,28 @@ class plgSystemQueuedContent extends JPlugin
         $item->introtext = $introtext;
         $item->fulltext  = $fulltext;
         $item->text      = implode(' ', $text);
+        $item->text      = implode(' ', $text);
 
         $this->item      = $item;
+
+        $data = (array) $item;
+        $data['articletext'] = $item->text;
 
         // Can't load Admin version of ContentModelArticle because Site version is needed to load
         // content properly, but this means there's no 'save' method available for updating the
         // article. I can't find a way round this, so we're actually re-loading it from the database
         // first so we can use all the JTable functionality, including automatic versions.
+        $article = JTable::getInstance('content');
 
-        $app = JFactory::getApplication();
-        $db  = JFactory::getDbo();
+        $article->load($item->id);
+        $article->introtext = $item->introtext;
+        $article->fulltext = $item->fulltext;
 
-        $query = $db->getQuery(true);
+        JEventDispatcher::getInstance()->trigger('onContentBeforeSave', array('com_content.article', $article, false, $data));
 
-        $updateObj = new stdClass;
-        $updateObj->id        = (int) $item->id;
-        $updateObj->introtext = $item->introtext;
-        $updateObj->fulltext  = $item->fulltext;
-        $updateObj->modified  = $item->queuedcontent['publish_date'];
-        $updateObj->version   = $item->version++;
+        $article->store();
 
-        $db->updateObject('#__content', $updateObj, 'id');
+        #JEventDispatcher::getInstance()->trigger('onContentAfterSave', array('com_content.article', $article, false $data));
 
         $this->clearQueue($item->id);
     }
@@ -74,8 +75,8 @@ class plgSystemQueuedContent extends JPlugin
 
         $query = $db->getQuery(true);
         $query->select(array($query->qn('publish_date'), $query->qn('queued_content')))
-            ->from($query->qn('#__content_queue'))
-            ->where($query->qn('content_id') . ' = ' . $query->q($item_id));
+              ->from($query->qn('#__content_queue'))
+              ->where($query->qn('content_id') . ' = ' . $query->q($item_id));
 
         return $db->setQuery($query)->loadObject();
     }
@@ -240,7 +241,7 @@ class plgSystemQueuedContent extends JPlugin
         }
 
         $content = false;
-        
+
         if (!empty($data['queuedcontent']['queued_content'])) {
             $content = trim($data['queuedcontent']['queued_content']);
         }

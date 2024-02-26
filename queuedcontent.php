@@ -222,7 +222,7 @@ class plgSystemQueuedContent extends JPlugin
         $app = JFactory::getApplication();
         $db  = JFactory::getDbo();
 
-        if (!$app->isAdmin()) {
+        if (!$app->isClient('administrator')) {
             return true; // Only run in admin
         }
 

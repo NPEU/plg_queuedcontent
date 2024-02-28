@@ -15,8 +15,9 @@
             label="PLG_SYSTEM_QUEUED_CONTENT_DATE_LABEL"
             description="PLG_SYSTEM_QUEUED_CONTENT_DATE_DESC"
             showtime="true"
+            filterformat="Y-m-d H:i:s"
             format="%Y-%m-%d %H:%M:%S"
-            filter="none"
+            filter="user_utc"
         />
         <field
             name="queued_content"

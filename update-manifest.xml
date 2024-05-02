@@ -6,7 +6,7 @@
         <element>queuedcontent</element>
         <type>plugin</type>
         <folder>system</folder>
-        <version>1.2.0</version>
+        <version>4.0.0</version>
         <client>site</client>
         <infourl title="NPEU: plg_queuedcontent">https://github.com/NPEU/plg_queuedcontent/releases/tag/v1.2.0</infourl>
         <downloads>

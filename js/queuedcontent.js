@@ -76,14 +76,14 @@ var QueuedContent = {
 
     'addFutureDateListener': function () {
         $ = jQuery;
-        
+
         $('#jform_queuedcontent_publish_date').change(function(e){
             QueuedContent.removeQueueNotice();
             if (QueuedContent.hasQueuedContent()) {
                 QueuedContent.addQueueNotice();
             }
         });
-        
+
         // Wait so that the Calendar 'Clear' button is likely loaded, then add click event to remove
         // notices:
         window.setTimeout(function(){
@@ -91,12 +91,12 @@ var QueuedContent = {
                 QueuedContent.removeQueueNotice();
             });
         }, 500);
-        
+
     },
 
     'addQueueNotice': function () {
         $ = jQuery;
-
+        console.log('addQueueNotice');
         title = QueuedContent.future_date_in_future
               ? 'Future-publishing content is queued.'
               : 'Future-publishing content is queued with a date that is <strong>in the past</strong>.';
@@ -106,7 +106,7 @@ var QueuedContent = {
                 : 'Any changes made to the Content will be replaced by the Queued Content <strong>the next time the page is loaded</strong>.</p>';
 
         notice = [
-            '<div class="row-fluid future-publish-queue-notice">',
+            '<div class="row form-vertical mb-3 future-publish-queue-notice">',
             '    <div class="alert alert-warning">',
             '       <h4 class="alert-heading">Warning</h4>',
             '       <div class="alert-message">',
@@ -118,37 +118,35 @@ var QueuedContent = {
             '</div>'
         ]
 
-        $('#item-form > .form-inline-header').after(notice.join("\n"));
+        $('#item-form > .title-alias').after(notice.join("\n"));
 
-        $('a[href="#' + QueuedContent.future_publish_group_id + '"]').append('<b class="future-publish-queue-notice"> (!)</b>');
+        $('[aria-controls="attrib-queuedcontent"]').append('<b class="future-publish-queue-notice"> (!)</b>');
     },
 
     'removeQueueNotice': function () {
         $ = jQuery;
-
         $('.future-publish-queue-notice').remove();
     },
 
     'hasQueuedContent': function () {
         $ = jQuery;
 
-
         // (note I used to check if the date was a valid future date, but that's wrong,
         // a date in the past can still be saved and the main content will be overwritten on the
         // next page load without warning the user, so don't do that.)
 
         future_date = $('#jform_queuedcontent_publish_date').val();
-        
+
         if (future_date == '') {
             return false;
         }
-
         // Check for future date in correct format: (e.g. 2019-01-30 11:54:48)
         if (future_date != '' && /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/.test(future_date)) {
 
             // Valid format, now compare with 'now':
             future_timestamp = Math.floor((new Date(future_date)).getTime() / 1000);
             now_timestamp = Math.floor((new Date()).getTime() / 1000);
+
             if (future_timestamp >= now_timestamp) {
                 QueuedContent.future_date_in_future = true;
                 return true;
@@ -157,7 +155,6 @@ var QueuedContent = {
                 return true;
             }
         }
-
         QueuedContent.future_date_in_future = null;
         return false;
 

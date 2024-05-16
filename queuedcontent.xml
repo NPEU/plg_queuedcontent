@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="plugin" group="system" version="3.2.0" method="upgrade">
+<extension type="plugin" group="system" method="upgrade">
 
     <name>PLG_SYSTEM_QUEUEDCONTENT</name>
     <author>Andy Kirk</author>
     <authorEmail>andy.kirk@npeu.ox.ac.uk</authorEmail>
     <authorUrl>https://www.npeu.ox.ac.uk</authorUrl>
-    <creationDate>October 2019</creationDate>
-    <copyright>(C) NPEU 2019</copyright>
+    <creationDate>February 2024</creationDate>
+    <copyright>(C) NPEU 2024</copyright>
     <license>MIT License; see LICENSE.md</license>
 
     <!--  The version string is recorded in the components table -->
-    <version>1.2.0</version>
+    <version>4.0.0</version>
     <!-- The description is optional and defaults to the name -->
     <description>PLG_SYSTEM_QUEUEDCONTENT_XML_DESCRIPTION</description>
 
     <updateservers>
         <!-- Note: No spaces or linebreaks allowed between the server tags -->
-        <server type="extension" name="NPEU: plg_queuedcontent Update Site">https://raw.githubusercontent.com/NPEU/plg_queuedcontent/master/update-manifest.xml</server>
+        <server type="extension" name="NPEU: plg_queuedcontent Update Site">https://raw.githubusercontent.com/NPEU/plg_queuedcontent/main/update-manifest.xml</server>
     </updateservers>
-    
+
     <install> <!-- Runs on install -->
         <sql>
             <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
@@ -34,13 +34,14 @@
             <schemapath type="mysql">sql/updates/mysql</schemapath>
         </schemas>
     </update>
-    
+
+    <namespace path="src">NPEU\Plugin\System\QueuedContent</namespace>
     <files>
-        <filename plugin="queuedcontent">queuedcontent.php</filename>
-        <filename>index.html</filename>
+        <folder plugin="queuedcontent">src</folder>
         <folder>forms</folder>
         <folder>js</folder>
         <folder>language</folder>
+        <folder>services</folder>
         <folder>sql</folder>
     </files>
 
